@@ -1,0 +1,27 @@
+<section id="contacts" style="transform: perspective(300px) rotateY(-180deg);" class="overflow-y-hidden card mt-12 sm:mt-16 md:mt-[100px] px-6 pb-4 md:pb-10 lg:pb-12 flex flex-col lg:items-center lg:flex-row justify-between rounded-2xl bg-linear-to-r from-[#d9d9d91f] to-[#7373731f]">
+    <div class="w-full" style="transform: perspective(300px) rotateY(-180deg); opacity: 1;">
+        <div class="flex items-center justify-between py-2 md:py-3 lg:py-4"> 
+            <svg onclick="closeContact()" role="img" class="iconify iconify--gg text-2xl opacity-50 absolute top-2 right-2 cursor-pointer" data-blobity="true" width="1em" height="1em" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12L4.81 17.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586z"></path>
+            </svg>
+          </div>
+          <div class="flex items-center h-full gap-1 w-full "> 
+            <form  method= "POST" action="{%url 'contact'%}" class="back w-full flex flex-col gap-3 grow-2 basis-0 -mt-24">
+                    {% csrf_token %}
+                    <div class="flex gap-1 flex-col">
+                        <label for="userName" class="opacity-70 text-sm lg:text-base ">Name</label>
+                        <input id="userName" name="userName" class="bg-transparent rounded-md border border-[#737373c4] focus:border-[#9f9d9dc4] outline-hidden py-1 pl-2" type="text" name="userName">
+                    </div>
+                    <div class="flex gap-1 flex-col">
+                        <label for="userEmail" class="opacity-70 text-sm lg:text-base ">Email</label>
+                        <input id="userEmail" name="userEmail" class="bg-transparent rounded-md border border-[#737373c4] focus:border-[#9f9d9dc4] outline-hidden py-1 pl-2" type="email" name="userEmail">
+                    </div>
+                    <div class="flex gap-1 flex-col">
+                        <label for="userMessage" class="opacity-70 text-sm lg:text-base">Message</label>
+                        <textarea id="userMessage" name="userMessage" rows="4" cols="50" class="bg-transparent rounded-md border border-[#737373c4] focus:border-[#9f9d9dc4] outline-hidden py-1 pl-2"></textarea>
+                    </div>
+                    <button class="rounded-md bg-linear-to-r from-[#d9d9d91f] to-[#7373731f] py-3 px-5 __className_b40857 font-bold uppercase mt-4" type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+</section>

@@ -1,0 +1,254 @@
+<script type="text/javascript">
+
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bimarsh Shrestha — iteratively Engineer</title>
+    <link rel="icon" href="" type="image/svg+xml" sizes="any">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    {% tailwind_css %}
+</head>
+{% block content %}
+{% if messages %}
+<div id="messages" class="fixed top-0 left-0 z-50 p-4">
+    <ul>
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<body class="max-w-[90%] xl:max-w-6xl w-full mx-auto overflow-x-hidden bg-gray-900 text-white">
+    <!-- Navigation -->
+    <div class="fixed max-w-[90%] xl:max-w-6xl w-full z-10">
+        <div class="flex justify-between items-center px-6 py-4 rounded-2xl bg-gradient-to-r from-gray-800/10 to-gray-600/10 mt-4 sm:mt-8 backdrop-blur-md">
+            <img alt="logo" src="{% static "images/b-logo.svg" %}" class="w-8 h-9 select-none">
+            <ul class="hidden sm:flex gap-8 lg:gap-12 text-gray-400">
+                <li><a href="#home" class="text-white hover:text-gray-300">Home</a></li>
+                <li><a href="#work" class="hover:text-gray-300">Work</a></li>
+                <li><a href="#about" class="hover:text-gray-300">About</a></li>
+                <li><a href="#contact" class="hover:text-gray-300">Contact</a></li>
+            </ul>
+            <div class="gap-5 text-xl hidden sm:flex">
+                <a target="_blank" href=""><i class="fab fa-linkedin"></i></a>
+                <a target="_blank" href=""><i class="fab fa-github"></i></a>
+                <a target="_blank" href=""><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="overflow-x-hidden sm:overflow-x-visible">
+        <!-- Home Section -->
+        <section id="home" class="pt-36 sm:pt-0 flex flex-col sm:flex-row min-h-screen items-center gap-6 sm:justify-between">
+            <div class="sm:w-3/5">
+                <div class="flex gap-2 mb-2 xl:mb-6 opacity-0 animate-fade-in">
+                    <p class="text-gray-400 text-xl lg:text-3xl">Hey, there</p>
+                    <img alt="hand-waving" src="{% static "images/hand-wave.svg" %}" class="w-8 h-8">
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight font-bold opacity-0 animate-fade-in">
+                    <span class="text-gray-400">I'm </span>
+                    <span class="bg-gradient-to-br from-teal-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">Bimarsh Shrestha</span>
+                    <p>a Software Engineer</p>
+                </h1>
+                <p class="text-gray-400 text-xl lg:text-3xl mt-3 sm:mt-6 opacity-0 animate-fade-in">currently focused on building experiences that drive growth.</p>
+            </div>
+            <div class="h-image flex items-center w-[310px] h-[380px] xl:w-[390px] xl:h-[470px] justify-center relative" style="opacity: 1; transform: translateY(0rem) rotate(-7.50823deg) translateZ(0px);">
+                <img alt="Bimarsh's picture" fetchpriority="high" data-nimg="fill" class="bg-image-radial px-10 pt-20" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="100vw" src ="{% static "images/profile.jpg" %}">
+            </div>
+        </section>
+
+        <!-- Work Section -->
+        <section id="work" class="flex flex-col gap-6 md:gap-10 pt-28">
+            <h1 class="uppercase text-4xl md:text-5xl xl:text-6xl font-bold opacity-80">Projects</h1>
+            {% for project in page_obj %}
+            <div class="w-full rounded-[20px] std-backdrop-blur bg-linear-to-r from-[#d9d9d91f] to-[#7373731f] grid grid-cols-1 items-start lg:grid-cols-12 xl:flex gap-5 xl:gap-10 p-6 duration-700 opacity-100 translate-y-0">
+                <img alt="work" loading="lazy" width="420" height="700" decoding="async" data-nimg="1" class="rounded-[10px] w-full lg:col-span-5" style="color:transparent" src="{{project.image.url}}">               
+                         
+                <div class="flex flex-col gap-4 lg:col-span-7">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-3xl sm:text-4xl xl:text-5xl font-bold" >{{ project.title }}</h2>
+                        <div class="flex gap-3 md:gap-4 text-2xl sm:text-3xl xl:text-4xl">
+                            <a href="{{ project.website_url }}" target="_blank" class="rounded-full bg-icon-radial p-3 hover:bg-red">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--line-md" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    <path stroke-dasharray="36" stroke-dashoffset="36" d="M12 5c-3.87 0 -7 3.13 -7 7c0 3.87 3.13 7 7 7c3.87 0 7 -3.13 7 -7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="36;0"></animate></path><path stroke-dasharray="12" stroke-dashoffset="12" d="M13 11l7 -7"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.2s" values="12;0"></animate></path>
+                                    <path stroke-dasharray="8" stroke-dashoffset="8" d="M21 3h-6M21 3v6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.2s" values="8;0"></animate></path></g></svg>
+                            </a>
+                            <a href="{{ project.github_url }}" class="rounded-full bg-icon-radial p-3" target="_blank">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--mingcute opacity-30" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
+                                    <path fill="currentColor" d="M6.315 6.176c-.25-.638-.24-1.367-.129-2.034a6.8 6.8 0 0 1 2.12 1.07c.28.214.647.283.989.18A9.3 9.3 0 0 1 12 5c.961 0 1.874.14 2.703.391c.342.104.709.034.988-.18a6.8 6.8 0 0 1 2.119-1.07c.111.667.12 1.396-.128 2.033c-.15.384-.075.826.208 1.14C18.614 8.117 19 9.04 19 10c0 2.114-1.97 4.187-5.134 4.818c-.792.158-1.101 1.155-.495 1.726c.389.366.629.882.629 1.456v3a1 1 0 0 0 2 0v-3c0-.57-.12-1.112-.334-1.603C18.683 15.35 21 12.993 21 10c0-1.347-.484-2.585-1.287-3.622c.21-.82.191-1.646.111-2.28c-.071-.568-.17-1.312-.57-1.756c-.595-.659-1.58-.271-2.28-.032a9 9 0 0 0-2.125 1.045A11.4 11.4 0 0 0 12 3c-.994 0-1.953.125-2.851.356a9 9 0 0 0-2.125-1.045c-.7-.24-1.686-.628-2.281.031c-.408.452-.493 1.137-.566 1.719l-.005.038c-.08.635-.098 1.462.112 2.283C3.484 7.418 3 8.654 3 10c0 2.992 2.317 5.35 5.334 6.397A4 4 0 0 0 8 17.98l-.168.034c-.717.099-1.176.01-1.488-.122c-.76-.322-1.152-1.133-1.63-1.753c-.298-.385-.732-.866-1.398-1.088a1 1 0 0 0-.632 1.898c.558.186.944 1.142 1.298 1.566c.373.448.869.916 1.58 1.218c.682.29 1.483.393 2.438.276V21a1 1 0 0 0 2 0v-3c0-.574.24-1.09.629-1.456c.607-.572.297-1.568-.495-1.726C6.969 14.187 5 12.114 5 10c0-.958.385-1.881 1.108-2.684c.283-.314.357-.756.207-1.14"></path></g></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <p class="text-base text-white/70">{{ project.description }}</p>
+                    <div class="flex gap-3 flex-wrap">
+                        {% for tech in project.technologies.all %}
+                        <p class="uppercase whitespace-nowrap bg-linear-to-r from-[#d9d9d91f] to-[#7373731f] px-2 py-[6px] md:py-[6px] md:px-3 rounded-[4px] font-medium md:font-bold text-base lg:text-lg">{{ tech.name }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <br>
+        </section>
+            <!-- Pagination -->
+            <div class="flex justify-center items-center mt-10 gap-4 text-xl">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-gray-700 rounded hover:bg-red-500">Previous</a>
+                {% endif %}
+            
+                <span class="px-4 py-2">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-gray-700 rounded hover:bg-red-500">Next</a>
+                {% endif %}
+            </div>
+            <!-- Work Experience -->
+        <section id="work" class="flex flex-col gap-6 md:gap-10 pt-14">
+            <div class="mt-10 md:mt-[0px]">
+                <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold " style="opacity: 0.652536;"> Work experience</h1>                <div class="flex mt-6 gap-4 pl-3">
+                    <div class="flex mt-6 gap-4 pl-3">
+                    <div class="w-3 h-auto bg-gradient-to-b from-white to-transparent"></div>
+                    <div class="flex flex-col gap-10">
+                        <!-- Bluechip Technologies -->
+                         {%for work in work_experience%}
+                        <div class="flex items-start gap-4 relative duration-1000 opacity-100 translate-y-0">
+                            <img alt="current" loading="lazy" width="24" height="24" class="absolute -translate-x-[29px] sm:-translate-x-8.5 left-0" style="color:transparent" src="{%static 'images/position-icon.svg'%}">                            <div class="grid grid-cols-5 sm:flex items-start gap-4 pl-4">
+                                <img alt="company-image" src="{{work.image.url}}" class="w-16 h-16 col-span-1">
+                                <div class="col-span-4">
+                                    <h1 class="text-2xl sm:text-3xl font-bold">{{work.title}}</h1>
+                                    <p class="text-base sm:text-lg font-bold my-2">{{work.company}} | {{work.role}}</p>
+                                    <p class="text-base sm:text-lg text-gray-400 my-3">{{work.start_date| date:"F Y" }} - {% if work.end_date %} {{ work.end_date|date:"F Y" }} {% else %} Present {% endif %} </p>
+                                    <ul class="list-disc pl-5">
+                                        {%for tasks in work.tasks.all%}
+                                        <li>{{tasks.name}}</li>
+                                        {%endfor%}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="pt-24 md:pt-36">
+            <h2 class="uppercase text-4xl md:text-5xl xl:text-6xl font-bold opacity-80">I amplify brand voices through the web</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-[8.5fr_3.5fr] gap-8 mt-6">
+                <div class="grid grid-cols-1 gap-6 text-gray-200 text-xl md:text-2xl">
+                    <p class="opacity-0 animate-slide-up">My passion lies in creating strong business solutions that aid business growth. Whether it’s a website to boost brand publicity or software solutions that streamline manual processes, I love taking brands from point A to their dreamy point B and iteratively improve as time goes on.</p>
+                    <p class="opacity-0 animate-slide-up">From writing my first lines of code back in late 2019 to this point I have continually refined my development skills overtime picking up UI/UX design on the way & solving complex challenges increasing the complexity as time goes by to ensure improvement.</p>
+                    <p class="opacity-0 animate-slide-up">Each challenge is unique so I ensure that I learn and grow through each one ensuring that I not only put in my best but also deliver solutions that businesses are proud to call their own. Wanna learn more? <a class="underline" href="">my résumé</a>.</p>
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <h2 class="font-bold text-xl md:text-2xl mb-2">Frontend Tools</h2>
+                        <p class="text-gray-400 text-base md:text-xl">JavaScript(ES6+), React, Next.js, TypeScript, Redux, Redux Toolkit, React Query, HTML5, Git/GitHub, React Hook Form, Formik.</p>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-xl md:text-2xl mb-2">UI Libraries</h2>
+                        <p class="text-gray-400 text-base md:text-xl">CSS3/SCSS/SASS, Tailwind CSS, Styled Components, Chakra UI, Framer Motion, Bootstrap, ReCharts.</p>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-xl md:text-2xl mb-2">Design Tools</h2>
+                        <p class="text-gray-400 text-base md:text-xl">Figma, FigJam, UX Research, UI Design, Prototyping.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="mt-12 sm:mt-16 md:mt-24 px-6 pb-4 md:pb-10 lg:pb-12 flex flex-col lg:flex-row justify-between rounded-2xl bg-gradient-to-r from-gray-800/10 to-gray-600/10">
+            <div class="flex justify-between items-center w-full">
+                <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold pt-4 md:pt-10 lg:pt-12">GOT A PROJECT IN MIND?</h2>
+                    <button onclick="openContact()" class="text-base"> CONTACT ME</button>
+            </div>
+        </section>
+        
+        {% include "contact.html" %}
+
+        <!-- Footer -->
+        <section id="footer" class="my-6 sm:my-8 text-sm sm:text-base lg:text-lg flex md:justify-between justify-center">
+            <p>© 2025 . BIMARSH SHRESTHA . ALL RIGHTS RESERVED</p>
+            <a class="md:flex hidden items-center gap-1" href=""><span>↑</span><p class="underline">SCROLL TO TOP</p></a>
+        </section>
+    </main>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="{%static 'js/script.js'%}"></script>
+</body>
+</html>
+<script>
+    document.getElementById("contacts").style.display = "none";
+
+    setTimeout(function() {
+      const msgDiv = document.getElementById('messages');
+      if (msgDiv) {
+        msgDiv.style.display = 'none';
+      }
+    }, 3000);  // 3000 ms = 3 seconds
+
+    function openContact() {
+        const contactSection = document.getElementById("contacts")
+        contactSection.style.display = "block";
+        const contact = document.getElementById("contact");
+        contact.style.display = "none";
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+
+      }
+      
+      // Close the contact form modal
+      function closeContact() {
+        document.getElementById("contacts").style.display = "none";
+        const contact = document.getElementById("contact");
+        contact.style.display = "block";
+        contact.scrollIntoView({ behavior: 'smooth' });
+      }
+  </script>
+{% endblock content %}

@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Django specific
+*.log
+*.pot
+*.pyc
+*.pyo
+db.sqlite3
+*.sqlite3
+*.env         # Environment variables file
+.env.local
+.env.production
+
+# Celery specific
+celerybeat-schedule
+*.pid
+
+# Bootstrap (when customizing or downloading)
+static/bootstrap/
+static/bootstrap.min.css
+static/bootstrap.min.js
+
+# Static files
+staticfiles/
+static/
+node_modules/
+
+# Media files (if you want to exclude uploaded media files)
+media/
+
+# Testing and Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# MySQL specific
+*.sql
+*.mysql
+*.db
+
+# Environments
+.env
+.vscode/
+.idea/
+*.swp
+
+# Virtual Environments
+venv/
+env/
+.myenv/
+.virtualenv/
+portfolio_venv/
