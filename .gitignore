@@ -7,12 +7,12 @@ __pycache__/
 *.so
 
 # Django specific
-*.log
-*.pot
-*.pyc
-*.pyo
-db.sqlite3
-*.sqlite3
+# *.log
+# *.pot
+# *.pyc
+# *.pyo
+# db.sqlite3
+# *.sqlite3
 *.env         # Environment variables file
 .env.local
 .env.production
@@ -21,18 +21,18 @@ db.sqlite3
 celerybeat-schedule
 *.pid
 
-# Bootstrap (when customizing or downloading)
-static/bootstrap/
-static/bootstrap.min.css
-static/bootstrap.min.js
+# # Bootstrap (when customizing or downloading)
+# static/bootstrap/
+# static/bootstrap.min.css
+# static/bootstrap.min.js
 
-# Static files
-staticfiles/
-static/
-node_modules/
+# # Static files
+# staticfiles/
+# static/
+# node_modules/
 
-# Media files (if you want to exclude uploaded media files)
-media/
+# # Media files (if you want to exclude uploaded media files)
+# media/
 
 # Testing and Coverage
 htmlcov/
@@ -47,10 +47,10 @@ coverage.xml
 *.py,cover
 .hypothesis/
 
-# MySQL specific
-*.sql
-*.mysql
-*.db
+# # MySQL specific
+# *.sql
+# *.mysql
+# *.db
 
 # Environments
 .env
